@@ -3,6 +3,56 @@ const Subject = require("../Models/Subject_Model");
 const Class = require("../Models/Class_Model");
 const TestMod = require("../Models/Test_Model");
 const Topic_Model = require("../Models/Topic_Model");
+const Standard = require("../Models/Class_Model");
+
+/**
+ * @swagger
+ * components:
+ *    schemas:
+ *       Books:
+ *          type: object
+ *          required:
+ *              - title
+ *              - author
+ *          properties:
+ *            id:
+ *               type: string
+ *               description: The auto-generated id of the book
+ *            title:
+ *              type: string
+ *              description: The Book title
+ *            author:
+ *               type: string
+ *               description: The book author
+ *          example:
+ *             id: A87SDYA7SYWQ
+ *             title: example title
+ *             author: example author
+ */
+
+/**
+ * @swagger
+ * tags:
+ *    name: Books
+ *    description: The Book managing tag
+ */
+
+/**
+ * @swagger
+ * /getAllClasses:
+ *  get:
+ *    summary: Use to request all classes with their respective subjects
+ *    tags: [Books]
+ *    responses:
+ *        200:
+ *          description: A successful response
+ *          content:
+ *            application/json:
+ *               schema:
+ *                  type: array
+ *                  items:
+ *                     $ref: "#/components/schemas/Books"
+ */
 
 exports.createNewUser = async (req, res) => {
   const user = await User.create({
@@ -44,12 +94,15 @@ exports.addClassTeacher = async (req, res) => {
 };
 
 exports.addSubjects = async (req, res) => {
-  const { subjectName, subjectType, classId } = req.body;
-  const subject = await Subject.create({
+  const { subjectName, subjectType, classId, className } = req.body;
+  const subjectModel = await Subject.create({
     subjectName,
     subjectType,
-    "standard.className": "1 - A",
+    "standard.className": className,
     "standard.classId": classId,
+  });
+  const classModel = await Class.findByIdAndUpdate(classId, {
+    $push: { subjectList: subjectModel._id },
   });
   res.status(200).json({ success: true });
 };
@@ -73,3 +126,34 @@ exports.createTest = async (req, res) => {
   });
   res.status(200).json({ questions });
 };
+
+exports.createHomeWork = async (req, res) => {
+  const {} = req.body;
+};
+
+exports.getAllClasses = async (req, res) => {
+  const classess = await Standard.aggregate([
+    {
+      $group: {
+        _id: "$standard",
+        sections: { $push: { section: "$section", classId: "$_id" } },
+      },
+    },
+    {
+      $sort: {
+        _id: -1,
+      },
+    },
+  ]);
+  res.status(200).json({ classess });
+};
+
+exports.getSingleClass = async (req, res) => {
+  const singleClass = await Class.findById(req.body.classId);
+  res.status(200).json({ singleClass, success: true });
+};
+
+// if(newArr.forEach((item, index) => {
+//   if(item.standard === el.standard) return false
+
+// }))

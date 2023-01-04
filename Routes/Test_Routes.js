@@ -6,6 +6,8 @@ const {
   addSubjects,
   createTopic,
   createTest,
+  getAllClasses,
+  getSingleClass,
 } = require("../Controller/Test_Controller");
 const { checkAuthorization } = require("../Middleware/Authorization");
 
@@ -22,5 +24,7 @@ router.post("/addClassTeacher", addClassTeacher);
 router.post("/addSubject", addSubjects);
 router.post("/createTopic", createTopic);
 router.post("/createTest", createTest);
+router.get("/getAllClasses", getAllClasses);
+router.post("/getSingleClass", getSingleClass);
 
 module.exports = router;

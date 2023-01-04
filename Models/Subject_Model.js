@@ -9,6 +9,7 @@ const subjectSchema = new mongoose.Schema({
     type: String,
     enum: ["Compulsory", "Optional"],
   },
+  studentList: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
   subjectTeacher: { type: mongoose.Types.ObjectId, ref: "user" },
   coTeacher: { type: mongoose.Types.ObjectId, ref: "user" },
   standard: {
